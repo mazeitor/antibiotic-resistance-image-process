@@ -91,8 +91,8 @@ def normalizingCoordinates(wells):
 	@return: rows and columns coordinates
 	'''
 	for well in wells:
-		r = well[3]
-		c = well[4]
+		r = int(well[3])
+		c = int(well[4])
 		x[c,r] = well[0]
 		y[r,c] = well[1]
 
@@ -233,7 +233,7 @@ def write(wells):
 		resistance = object["resistance"]
 		total = object["total"]
 		density = round(float(resistance)/float(total),2)
-		filename = "output\s{0}-{1}_{2}-{3}.jpg".format(row,column,resistance,density)
+		filename = "outputs/{0}-{1}_{2}-{3}.jpg".format(row,column,resistance,density)
 		cv2.imwrite(filename, cropped, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
 	
 if __name__ == '__main__':
