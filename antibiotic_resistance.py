@@ -165,6 +165,33 @@ def getSegmentedWells(image, rows, columns, radius):
 		labelX += 1
 	
 	return croppedwells
+
+def getWells(image,wells,radius):
+        LABELROWS=["1","2","3","4","5","6","7","8"]
+        LABELCOLUMNS=["A","B","C","D","E","F","G","H","I","J","K","l"]
+
+        croppedwells=[]
+
+	#index = np.lexsort((wells[:,4],wells[:,3]))
+	#wells = wells[index]
+	for well in wells:
+		y = int(well[0])
+		x = int(well[1])
+		labelY = int(well[3])
+		labelX = int(well[4])
+
+		cropped = image[x-radius:x+radius,y-radius:y+radius]
+		croppedgray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
+		
+		# Otsu's thresholding after Gaussian filtering
+		blur = cv2.GaussianBlur(croppedgray,(5,5),0)		
+		threshold,img = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+
+		#here we have img segmented, we can crop the circle
+		img,resistance,total = segmentedWell(img,radius)
+
+		croppedwells.append({"image":img,"row":LABELROWS[labelX],"column":LABELCOLUMNS[labelY],"resistance":resistance,"total":total})
+	return croppedwells
 	
 def quality(wells):
 	'''
@@ -172,7 +199,7 @@ def quality(wells):
 	@param wells: numpyarray as matrix structure to manage wells
 	@return: true or false
 	'''
-	return False
+	return len(wells) == 96
 	
 def paint(wells,output,output_name):
 	'''
@@ -194,7 +221,7 @@ def paint(wells,output,output_name):
 			cv2.rectangle(output, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
 	 
 		# write to file
-		filename = "images\{0}.jpg".format(output_name)
+		filename = "images/{0}.jpg".format(output_name)
 		cv2.imwrite(filename, output, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
 
 def paintcoord(well_x, well_y, radius, output, output_name):
@@ -218,7 +245,7 @@ def paintcoord(well_x, well_y, radius, output, output_name):
 			cv2.rectangle(output, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
 
 	# write to file
-	filename = "images\{0}.jpg".format(output_name)
+	filename = "images/{0}.jpg".format(output_name)
 	cv2.imwrite(filename, output, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
 	
 def write(wells):
@@ -233,7 +260,7 @@ def write(wells):
 		resistance = object["resistance"]
 		total = object["total"]
 		density = round(float(resistance)/float(total),2)
-		filename = "outputs/{0}-{1}_{2}-{3}.jpg".format(row,column,resistance,density)
+		filename = "output/{0}-{1}_{2}-{3}.jpg".format(row,column,resistance,density)
 		cv2.imwrite(filename, cropped, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
 	
 if __name__ == '__main__':
@@ -242,15 +269,24 @@ if __name__ == '__main__':
 	ap.add_argument("-i", "--image", required = True, help = "Path to the image")
 	ap.add_argument("--minRadius", required = False, help = "Min radius for hough circles method")
 	ap.add_argument("--maxRadius", required = False, help = "Max radius for hough circles method")
+	ap.add_argument("--normError", required = False, help = "Error value to normalize the radius of a circle to be evaluated")
+	ap.add_argument("--threshold", required = False, help = "Threshold to construct groups of rows and colums")
+
 	args = vars(ap.parse_args())
 
 	input_path = args["image"]
 	minRadius = 18
 	maxRadius = 27
+	normalizingerror = 3
+	labelthreshold = 3
 	if args["minRadius"] is not None:
 		minRadius = int(args["minRadius"])
 	if args["maxRadius"] is not None:
 		maxRadius = int(args["maxRadius"])
+	if args["normError"] is not None:
+		normalizingerror = int(args["normError"])
+	if args["threshold"] is not None:
+		labelthreshold = int(args["threshold"])
 
 	##load the image, clone it for output
 	image = cv2.imread(input_path)
@@ -278,7 +314,7 @@ if __name__ == '__main__':
 	##initializing variables
 	NUM_LABELS_IN_ROWS = 4
 	NUM_LABELS_IN_COLUMNS = 3
-	LABELTHRESHOLD_INDEX = 3
+	LABELTHRESHOLD_INDEX = labelthreshold
 	ROW_INDEX = 0
 	COLUMN_INDEX = 1
 
@@ -290,6 +326,9 @@ if __name__ == '__main__':
 	##writting wells with original
 	paint(wells,outputs["output1"],"output1")
 
+	##measuring the rotation of the image
+	##wells = rotation(wells)
+
 	##column 0,1 speficy the COORDINATES and COLUMN 2,3 identify ROW and COLUMN label
 	##sorting and labeling objects by rows
 	wells = sorting(wells, ROW_INDEX) 
@@ -299,6 +338,9 @@ if __name__ == '__main__':
 	wells = sorting(wells, COLUMN_INDEX)
 	wells = labeling(wells, COLUMN_INDEX, LABELTHRESHOLD_INDEX) 
 	 
+	error = quality(wells)
+	print error,len(wells)
+
 	##remove associates elements with labels less than total number of ROWS or COLUMNS
 	wells = removing(wells, ROW_INDEX+3, NUM_LABELS_IN_ROWS) 
 	wells = removing(wells, COLUMN_INDEX+3, NUM_LABELS_IN_COLUMNS) 
@@ -312,18 +354,22 @@ if __name__ == '__main__':
 
 	##here we can check if we have 96 samples then we analyse the image otherwise we analyse but warning with message
 	error = quality(wells)
-	
+	print error, len(wells)
+
+	#print error , type(wells), wells
 	##normalizing coordinates, 8 rows and 12 columns
 	x = np.matrix(np.arange(8*12).reshape((8, 12)))
 	y = np.matrix(np.arange(8*12).reshape((12, 8)))
 	columns,rows = normalizingCoordinates(wells)
-	radiuseavg = int(np.mean(wells, axis=0)[2])-3	
+	radiusavg = int(np.mean(wells, axis=0)[2])-normalizingerror	
+	
 
 	##writting normalized wells with original
-	paintcoord(x,y,radiuseavg,outputs["output3"],"output3")
+	#paintcoord(x,y,radiusavg,outputs["output3"],"output3")
 
 	##given a matrix of samples and an average radius, aply a otsu segmentation and get only the wells, not bounding box
-	wells = getSegmentedWells(image, rows, columns, radiuseavg)
-
+	#wells = getSegmentedWells(image, rows, columns, radiusavg)
+	wells = getWells(image,wells,radiusavg)
+	
 	##write the results in a separated file
 	write(wells)	
