@@ -91,7 +91,7 @@ def antibioticextraction(image, radius):
 	@param radius: radius of the well
 	@return: well segmented image, resistance antitiotic metric and total evaluated pixels
 	'''
-	frame = 5
+	frame = 2 
 	total = int(np.pi*((radius-frame)*(radius-frame)))
 	resistance=0
 	x = image.shape[0]
@@ -125,13 +125,26 @@ def segmentation(image,wells,radius):
 		labelY = int(well[3])
 		labelX = int(well[4])
 
-		cropped = image[x-radius:x+radius,y-radius:y+radius]
+		dimension = np.shape(image)
+		x1=x-radius
+		x2=x+radius
+		if x1<0:
+			x1=0
+		if x2>dimension[0]:
+			x2=dimension[0]
+		y1=y-radius
+		y2=y+radius
+		if y1<0:
+			y1=0
+		if y2>dimension[1]:
+			y2=dimension[1]
+		
+		cropped = image[x1:x2,y1:y2]
 		croppedgray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
 		
 		# Otsu's thresholding after Gaussian filtering
 		blur = cv2.GaussianBlur(croppedgray,(5,5),0)		
 		threshold,img = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-
 		#here we have img segmented, we can crop the circle
 		img,resistance,total = antibioticextraction(img,radius)
 
@@ -207,6 +220,90 @@ def write(wells):
 		density = round(float(resistance)/float(total),2)
 		filename = "output/{0}-{1}_{2}-{3}.jpg".format(row,column,resistance,density)
 		cv2.imwrite(filename, cropped, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+
+##initializing variables
+NUM_LABELS_IN_ROWS = 4
+NUM_LABELS_IN_COLUMNS = 3
+ROW_INDEX = 0
+COLUMN_INDEX = 1
+
+def execution1(image, outputs, minRadius, maxRadius, labelthreshold):
+       	###circle detection
+	try: 
+		##convert image to grayscale
+		gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+		gray = cv2.medianBlur(gray,3)
+
+		##detect wells in the image
+		wells = cv2.HoughCircles(
+						gray,                                           ## image
+						cv2.cv.CV_HOUGH_GRADIENT,       ## method for detecting wells
+						1,                                                      ## canny filter
+						15,                                                     ## minimun distance between wells detected
+						param1=30,                                      ## 30
+						param2=15,                                      ## 15
+						minRadius=minRadius,            ## 20 ## 18 relaxed
+						maxRadius=maxRadius             ## 25 ## 27 relaxed
+					  )
+
+		LABELTHRESHOLD_INDEX = labelthreshold
+		
+		##preparing well data structure
+		wells = wells[0,:]
+		wells = np.insert(wells, 3, 0, axis=1) ## add dimensionality
+		wells = np.insert(wells, 4, 0, axis=1) ## add dimensionality
+
+		##writting wells with original
+		paint(wells,outputs["output1"],"output1")
+
+		##column 0,1 speficy the COORDINATES and COLUMN 2,3 identify ROW and COLUMN label
+		##sorting and clustering objects by rows
+		wells = sorting(wells, ROW_INDEX)
+		wells = clustering(wells, ROW_INDEX, LABELTHRESHOLD_INDEX)
+
+		##sorting and clustering objects by columns
+		wells = sorting(wells, COLUMN_INDEX)
+		wells = clustering(wells, COLUMN_INDEX, LABELTHRESHOLD_INDEX)
+
+		error = quality(wells)
+		return error,len(wells),wells
+	except:
+		return False,0,None
+
+def execution2(image, outputs, wells):
+	###cleaning wells
+
+	##remove associates elements with labels less than total number of ROWS or COLUMNS
+	wells = removing(wells, ROW_INDEX+3, NUM_LABELS_IN_ROWS)
+	wells = removing(wells, COLUMN_INDEX+3, NUM_LABELS_IN_COLUMNS)
+
+	##writting wells with original
+	paint(wells,outputs["output2"],"output2")
+
+	##indexing cluster id for consecutives id's in rows and columns
+	wells = indexing(wells,ROW_INDEX+3)
+	wells = indexing(wells,COLUMN_INDEX+3)
+
+	##here we can check if we have 96 samples then we analyse the image otherwise we analyse but warning with message
+	error = quality(wells)
+	return error, len(wells), wells
+
+
+def execution3(image, outputs, normalizingerror, wells):
+        ###segmentation wells
+
+        ##getting an average of the radius
+        radiusavg = int(np.mean(wells, axis=0)[2])-normalizingerror
+
+        ##writting normalized wells with original
+        #paintcoord(x,y,radiusavg,outputs["output3"],"output3")
+
+        ##given a matrix of samples and an average radius, aply a otsu segmentation and get only the wells, not bounding box
+        wells = segmentation(image,wells,radiusavg)
+
+        ##write the results in a separated file
+        write(wells)
+
 	
 if __name__ == '__main__':
 	# construct the argument parser and parse the arguments
@@ -221,8 +318,8 @@ if __name__ == '__main__':
 
 	input_path = args["image"]
 	minRadius = 18
-	maxRadius = 27
-	normalizingerror = 3
+	maxRadius = 18 
+	normalizingerror = 1
 	labelthreshold = 3
 	if args["minRadius"] is not None:
 		minRadius = int(args["minRadius"])
@@ -240,73 +337,20 @@ if __name__ == '__main__':
 	outputs["output2"]=image.copy()
 	outputs["output3"]=image.copy()
 
-	##convert image to grayscale
-	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-	gray = cv2.medianBlur(gray,3)
+	numwells = 0
+	thresholditerations = 5
+	while numwells < 96 and thresholditerations>0:
+		iterations = 10
+		while numwells < 96 and iterations>0:
+			error, numwells, wells = execution1(image, outputs, minRadius, maxRadius, labelthreshold)
+			print error, numwells, minRadius, maxRadius
+			maxRadius = maxRadius + 1
+			iterations = iterations + 1
+		labelthreshold = labelthreshold + 1
 
-	##detect wells in the image
-	wells = cv2.HoughCircles(
-					gray, 						## image
-					cv2.cv.CV_HOUGH_GRADIENT, 	## method for detecting wells
-					1, 							## canny filter
-					15,							## minimun distance between wells detected
-					param1=30,					## 30
-					param2=15,					## 15
-					minRadius=minRadius, 		## 20 ## 18 relaxed
-					maxRadius=maxRadius 		## 25 ## 27 relaxed
-				  )
-		  
-	##initializing variables
-	NUM_LABELS_IN_ROWS = 4
-	NUM_LABELS_IN_COLUMNS = 3
-	LABELTHRESHOLD_INDEX = labelthreshold
-	ROW_INDEX = 0
-	COLUMN_INDEX = 1
+	error, numwells, wells = execution2(image, outputs, wells)
+	print error, numwells
 
-	##preparing well data structure
-	wells = wells[0,:]
-	wells = np.insert(wells, 3, 0, axis=1) ## add dimensionality
-	wells = np.insert(wells, 4, 0, axis=1) ## add dimensionality
 
-	##writting wells with original
-	paint(wells,outputs["output1"],"output1")
-
-	##column 0,1 speficy the COORDINATES and COLUMN 2,3 identify ROW and COLUMN label
-	##sorting and clustering objects by rows
-	wells = sorting(wells, ROW_INDEX) 
-	wells = clustering(wells, ROW_INDEX, LABELTHRESHOLD_INDEX) 
-
-	##sorting and clustering objects by columns
-	wells = sorting(wells, COLUMN_INDEX)
-	wells = clustering(wells, COLUMN_INDEX, LABELTHRESHOLD_INDEX) 
-	 
-	error = quality(wells)
-	print error,len(wells)
-
-	##remove associates elements with labels less than total number of ROWS or COLUMNS
-	wells = removing(wells, ROW_INDEX+3, NUM_LABELS_IN_ROWS) 
-	wells = removing(wells, COLUMN_INDEX+3, NUM_LABELS_IN_COLUMNS) 
-
-	##writting wells with original
-	paint(wells,outputs["output2"],"output2")
-
-	##indexing cluster id for consecutives id's in rows and columns
-	wells = indexing(wells,ROW_INDEX+3)
-	wells = indexing(wells,COLUMN_INDEX+3)
-
-	##here we can check if we have 96 samples then we analyse the image otherwise we analyse but warning with message
-	error = quality(wells)
-	print error, len(wells)
-
-	#print error , type(wells), wells
-	##getting an average of the radius
-	radiusavg = int(np.mean(wells, axis=0)[2])-normalizingerror	
+	execution3(image, outputs, normalizingerror, wells)
 	
-	##writting normalized wells with original
-	#paintcoord(x,y,radiusavg,outputs["output3"],"output3")
-
-	##given a matrix of samples and an average radius, aply a otsu segmentation and get only the wells, not bounding box
-	wells = wellSegmentation(image,wells,radiusavg)
-	
-	##write the results in a separated file
-	write(wells)	
