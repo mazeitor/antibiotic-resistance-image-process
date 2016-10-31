@@ -17,9 +17,9 @@ def sorting(wells, SORTINGINDEX):
 	i = np.lexsort((wells[:,1], wells[:,SORTINGINDEX])) ###get sorted indexes
 	return wells[i]
 
-def labeling(wells, INDEX, THRESHOLD):
+def clustering(wells, INDEX, THRESHOLD):
 	'''
-	@brief: labeling wells structure by index -> rows or columns
+	@brief: clustering wells structure by index -> rows or columns
 	@param wells: numpyarray as matrix structure to manage wells
 	@param INDEX: index to specify the space to label
 	@param THRESHOLD: 
@@ -36,9 +36,9 @@ def labeling(wells, INDEX, THRESHOLD):
 		idx += 1
 	return wells
 
-def changingLabels(wells, INDEX):
+def indexing(wells, INDEX):
 	'''
-	@brief: changing labels for consecutives labels in rows and columns
+	@brief: change cluster id for consecutives id's in rows and columns.
 	@param wells: numpyarray as matrix structure to manage wells
 	@param INDEX: index to specify the space to label
 	@return: wells labeled by index
@@ -83,26 +83,8 @@ def removing(wells, INDEX, NUMBER):
 			cleaned[s[0]]=wells[idx]
 		idx += 1
 	return cleaned
-
-def normalizingCoordinates(wells):
-	'''
-	@brief: normalizing coordinates, 8 rows and 12 columns
-	@param wells: numpyarray as matrix structure to manage wells
-	@return: rows and columns coordinates
-	'''
-	for well in wells:
-		r = int(well[3])
-		c = int(well[4])
-		x[c,r] = well[0]
-		y[r,c] = well[1]
-
-	xavg = np.mean(x, axis=0)
-	yavg = np.mean(y, axis=0)
-	
-	return xavg,yavg
-
 			
-def segmentedWell(image, radius):
+def antibioticextraction(image, radius):
 	'''
 	@brief: well segmentation and extraction the antitiobic resistance for that specific well
 	@param image: image with a well
@@ -128,45 +110,8 @@ def segmentedWell(image, radius):
 			j+=1
 		i+=1
 	return image,resistance,total
-		
-def getSegmentedWells(image, rows, columns, radius):
-	'''
-	@brief: given a matrix of samples and an average radius, aply a otsu segmentation and get only the wells, not bounding box
-	@param image: image with plate
-	@param rows: set of rows coordinates
-	@param columns: set of columns coordinates 
-	@param radius: radius of the well 
-	@return: list of wells 
-	'''
-	
-	LABELROWS=["1","2","3","4","5","6","7","8"]
-	LABELCOLUMNS=["A","B","C","D","E","F","G","H","I","J","K","l"]
 
-	croppedwells=[]
-	
-	labelX = 0
-	for x in rows.tolist()[0]:
-		labelY = 0
-		x = int(x)
-		for y in columns.tolist()[0]:	
-			y=int(y)			
-			cropped = image[x-radius:x+radius,y-radius:y+radius]
-			croppedgray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
-			
-			# Otsu's thresholding after Gaussian filtering
-			blur = cv2.GaussianBlur(croppedgray,(5,5),0)
-			threshold,img = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-			##here we have img segmented, we can crop the circle
-			img,resistance,total = segmentedWell(img,radius)
-		
-			croppedwells.append({"image":img,"row":LABELROWS[labelX],"column":LABELCOLUMNS[labelY],"resistance":resistance,"total":total})
-			
-			labelY += 1
-		labelX += 1
-	
-	return croppedwells
-
-def getWells(image,wells,radius):
+def segmentation(image,wells,radius):
         LABELROWS=["1","2","3","4","5","6","7","8"]
         LABELCOLUMNS=["A","B","C","D","E","F","G","H","I","J","K","l"]
 
@@ -188,7 +133,7 @@ def getWells(image,wells,radius):
 		threshold,img = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
 		#here we have img segmented, we can crop the circle
-		img,resistance,total = segmentedWell(img,radius)
+		img,resistance,total = antibioticextraction(img,radius)
 
 		croppedwells.append({"image":img,"row":LABELROWS[labelX],"column":LABELCOLUMNS[labelY],"resistance":resistance,"total":total})
 	return croppedwells
@@ -326,17 +271,14 @@ if __name__ == '__main__':
 	##writting wells with original
 	paint(wells,outputs["output1"],"output1")
 
-	##measuring the rotation of the image
-	##wells = rotation(wells)
-
 	##column 0,1 speficy the COORDINATES and COLUMN 2,3 identify ROW and COLUMN label
-	##sorting and labeling objects by rows
+	##sorting and clustering objects by rows
 	wells = sorting(wells, ROW_INDEX) 
-	wells = labeling(wells, ROW_INDEX, LABELTHRESHOLD_INDEX) 
+	wells = clustering(wells, ROW_INDEX, LABELTHRESHOLD_INDEX) 
 
-	##sorting and labeling objects by columns
+	##sorting and clustering objects by columns
 	wells = sorting(wells, COLUMN_INDEX)
-	wells = labeling(wells, COLUMN_INDEX, LABELTHRESHOLD_INDEX) 
+	wells = clustering(wells, COLUMN_INDEX, LABELTHRESHOLD_INDEX) 
 	 
 	error = quality(wells)
 	print error,len(wells)
@@ -348,28 +290,23 @@ if __name__ == '__main__':
 	##writting wells with original
 	paint(wells,outputs["output2"],"output2")
 
-	##changing labels for consecutives labels in rows and columns
-	wells = changingLabels(wells,ROW_INDEX+3)
-	wells = changingLabels(wells,COLUMN_INDEX+3)
+	##indexing cluster id for consecutives id's in rows and columns
+	wells = indexing(wells,ROW_INDEX+3)
+	wells = indexing(wells,COLUMN_INDEX+3)
 
 	##here we can check if we have 96 samples then we analyse the image otherwise we analyse but warning with message
 	error = quality(wells)
 	print error, len(wells)
 
 	#print error , type(wells), wells
-	##normalizing coordinates, 8 rows and 12 columns
-	x = np.matrix(np.arange(8*12).reshape((8, 12)))
-	y = np.matrix(np.arange(8*12).reshape((12, 8)))
-	columns,rows = normalizingCoordinates(wells)
+	##getting an average of the radius
 	radiusavg = int(np.mean(wells, axis=0)[2])-normalizingerror	
 	
-
 	##writting normalized wells with original
 	#paintcoord(x,y,radiusavg,outputs["output3"],"output3")
 
 	##given a matrix of samples and an average radius, aply a otsu segmentation and get only the wells, not bounding box
-	#wells = getSegmentedWells(image, rows, columns, radiusavg)
-	wells = getWells(image,wells,radiusavg)
+	wells = wellSegmentation(image,wells,radiusavg)
 	
 	##write the results in a separated file
 	write(wells)	
