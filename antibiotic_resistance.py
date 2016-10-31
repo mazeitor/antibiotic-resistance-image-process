@@ -348,9 +348,8 @@ if __name__ == '__main__':
 			iterations = iterations + 1
 		labelthreshold = labelthreshold + 1
 
-	error, numwells, wells = execution2(image, outputs, wells)
-	print error, numwells
-
+		error, numwells, wells = execution2(image, outputs, wells)
+		print error, numwells
 
 	execution3(image, outputs, normalizingerror, wells)
 	
