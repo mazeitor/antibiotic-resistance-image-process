@@ -291,6 +291,8 @@ def execution2(image, outputs, wells):
 
 def execution3(image, outputs, normalizingerror, wells):
         ###segmentation wells
+        ##writting wells with original
+        paint(wells,outputs["output3"],"output3")
 
         ##getting an average of the radius
         radiusavg = int(np.mean(wells, axis=0)[2])-normalizingerror
@@ -318,7 +320,7 @@ if __name__ == '__main__':
 
 	input_path = args["image"]
 	minRadius = 18
-	maxRadius = 18 
+	maxRadius = 23 
 	normalizingerror = 1
 	labelthreshold = 3
 	if args["minRadius"] is not None:
@@ -345,6 +347,7 @@ if __name__ == '__main__':
 			error, numwells, wells = execution1(image, outputs, minRadius, maxRadius, labelthreshold)
 			print "ex1",error, numwells, minRadius, maxRadius
 			maxRadius = maxRadius + 1
+			#minRadius = minRadius + 1
 			iterations = iterations - 1
 			
 			if numwells>=96:
