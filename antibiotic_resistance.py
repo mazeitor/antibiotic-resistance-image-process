@@ -339,17 +339,20 @@ if __name__ == '__main__':
 
 	numwells = 0
 	thresholditerations = 5
-	while numwells < 96 and thresholditerations>0:
+	while numwells != 96 and thresholditerations>0:
 		iterations = 10
 		while numwells < 96 and iterations>0:
 			error, numwells, wells = execution1(image, outputs, minRadius, maxRadius, labelthreshold)
-			print error, numwells, minRadius, maxRadius
+			print "ex1",error, numwells, minRadius, maxRadius
 			maxRadius = maxRadius + 1
-			iterations = iterations + 1
-		labelthreshold = labelthreshold + 1
+			iterations = iterations - 1
+			
+			if numwells>=96:
+				error, numwells, wells = execution2(image, outputs, wells)
+				print "ex2",error, numwells
+		thresholditerations = thresholditerations - 1
 
-		error, numwells, wells = execution2(image, outputs, wells)
-		print error, numwells
-
-	execution3(image, outputs, normalizingerror, wells)
-	
+	if numwells == 96:
+		execution3(image, outputs, normalizingerror, wells)
+	else:
+		print "error"
