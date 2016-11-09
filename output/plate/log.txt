@@ -1,4 +1,4 @@
 customizing scale well: found False, num wells 93, min radius value 18, max radius value 23
-customizing scale well: found True, num wells 96, min radius value 18, max radius value 24
-customizing grid matching: found True, num wells recognized 96
+customizing scale well: found False, num wells 96, min radius value 18, max radius value 24
+customizing grid matching: found False, num wells recognized 96
 Succesfully processed plate, found 96 wells

@@ -94,7 +94,7 @@ def antibioticextraction(image, radius):
 	@param radius: radius of the well
 	@return: well segmented image, resistance antitiotic metric and total evaluated pixels
 	'''
-	frame = 3 
+	frame=0
 	total = int(np.pi*((radius-frame)*(radius-frame)))
 	resistance=0
 	x = image.shape[0]
@@ -142,7 +142,6 @@ def segmentation(image,wells,radius):
 		if y2>dimension[1]:
 			y2=dimension[1]-1
 	
-		#print "lx",labelX,"ly",labelY,"x1",x1,"x2",x2,"y1",y1,"y2",y2
 		cropped = image[x1:x2,y1:y2]
 		croppedgray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
 		
@@ -151,8 +150,6 @@ def segmentation(image,wells,radius):
 		threshold,img = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 		#here we have img segmented, we can crop the circle
 		img,resistance,total = antibioticextraction(img,radius)
-		#if labelX == 5 and labelY == 0:
-		#	print "BUU", LABELROWS[labelX],LABELCOLUMNS[labelY], resistance,total
 		croppedwells.append({"image":img,"row":LABELROWS[labelX],"column":LABELCOLUMNS[labelY],"resistance":resistance,"total":total})
 	return croppedwells
 	
@@ -162,7 +159,35 @@ def quality(wells):
 	@param wells: numpyarray as matrix structure to manage wells
 	@return: true or false
 	'''
-	return len(wells) == 96
+	##count wells per each column, should be 8 per column, total 12 columns.
+	error = True
+
+	##deprecated
+	##error = len(wells)==96
+
+	columns = dict()
+	rows = dict()
+
+	for i in range(12):
+		columns[i] = 0
+	for i in range(8):
+		rows[i] = 0
+
+	for well in wells:
+		labelY = int(well[3])
+		labelX = int(well[4])
+
+		columns[labelY] = columns[labelY]+1
+		rows[labelX] = rows[labelX]+1
+
+	for column in columns:
+		if column != 8:
+			return False
+	for row in rows:
+		if row != 12:
+			return False
+
+	return error
 	
 def paint(wells,output,output_name,platename):
 	'''
@@ -213,7 +238,7 @@ def paintcoord(well_x, well_y, radius, output, output_name):
 	filename = "images/{0}.jpg".format(output_name)
 	cv2.imwrite(filename, output, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
 	
-def write(wells, platename, log):
+def write(wells, platename):
 	'''
 	@brief: write each well found as a file
 	@param wells: numpyarray as matrix structure to manage wells
@@ -236,11 +261,14 @@ def write(wells, platename, log):
 		object["density"] = density
 		object.pop("image",None)
 		data[row+"-"+column]=object
-		
+	
 	filename = "{0}/{1}.json".format(path,"report")
 	jsonfile = open(filename, 'wb')
 	json.dump(data,jsonfile)
 
+
+def writeLog(platename,log):
+	path = "output/{0}".format(platename)
 	filename = "{0}/{1}.txt".format(path,"log")
 	logfile = open(filename, 'wb')
 	for line in log:
@@ -255,7 +283,7 @@ NUM_LABELS_IN_COLUMNS = 3
 ROW_INDEX = 0
 COLUMN_INDEX = 1
 
-def execution1(image, outputs, minRadius, maxRadius, labelthreshold, platename):
+def execution1(image, outputs, minRadius, maxRadius, clusterthreshold, platename):
        	###circle detection
 	try: 
 		##convert image to grayscale
@@ -274,7 +302,7 @@ def execution1(image, outputs, minRadius, maxRadius, labelthreshold, platename):
 						maxRadius=maxRadius             ## 25 ## 27 relaxed
 					  )
 
-		LABELTHRESHOLD_INDEX = labelthreshold
+		LABELTHRESHOLD_INDEX = clusterthreshold
 		
 		##preparing well data structure
 		wells = wells[0,:]
@@ -325,9 +353,6 @@ def execution3(image, outputs, normalizingerror, wells, platename):
         ##getting an average of the radius
         radiusavg = int(np.mean(wells, axis=0)[2])-normalizingerror
 
-        ##writting normalized wells with original
-        #paintcoord(x,y,radiusavg,outputs["output3"],"output3")
-
         ##given a matrix of samples and an average radius, aply a otsu segmentation and get only the wells, not bounding box
         wells = segmentation(image,wells,radiusavg)
 
@@ -352,9 +377,9 @@ if __name__ == '__main__':
 	base, platename = os.path.split(input_path)
 	platename, extension = os.path.splitext(platename)
 	minRadius = 18
-	maxRadius = 23 
-	normalizingerror = 1
-	labelthreshold = 3
+	maxRadius = 23 ##scale wells recognizing 
+	normalizingerror = 5 
+	clusterthreshold = 2 ##cluster wells recognizing
 	if args["minRadius"] is not None:
 		minRadius = int(args["minRadius"])
 	if args["maxRadius"] is not None:
@@ -362,14 +387,14 @@ if __name__ == '__main__':
 	if args["normError"] is not None:
 		normalizingerror = int(args["normError"])
 	if args["threshold"] is not None:
-		labelthreshold = int(args["threshold"])
+		clusterthreshold = int(args["threshold"])
 
 	##preparing folder for outputs
         path = "output/{0}".format(platename)
 	if not os.path.exists(path):
 		os.makedirs(path)
 	else:
-	        shutil.rmtree(path)#removes all the subdirectories!
+	        shutil.rmtree(path) #removes all the subdirectories!
 	        os.makedirs(path)
 
 	##load the image, clone it for output
@@ -382,10 +407,13 @@ if __name__ == '__main__':
 	##dynamic algorithm to find the result that converge, in this case we take account the maxradius of a well to be robust in scale and threshold to recognize a well is inside a grid (96-well plate is a grid with 8 row and 12 columns)
 	numwells = 0
 	thresholditerations = 5
+	clusterthreshold = 5
 	while numwells != 96 and thresholditerations>0:
 		iterations = 10
+		maxRadius = 23
+		
 		while numwells < 96 and iterations>0:
-			error, numwells, wells = execution1(image, outputs, minRadius, maxRadius, labelthreshold, platename)
+			error, numwells, wells = execution1(image, outputs, minRadius, maxRadius, clusterthreshold, platename)
 			log.append("customizing scale well: found {0}, num wells {1}, min radius value {2}, max radius value {3}".format(error, numwells, minRadius, maxRadius))
 			maxRadius = maxRadius + 1
 			iterations = iterations - 1
@@ -393,6 +421,8 @@ if __name__ == '__main__':
 			if numwells>=96:
 				error, numwells, wells = execution2(image, outputs, wells, platename)
 				log.append("customizing grid matching: found {0}, num wells recognized {1}".format(error, numwells))
+		
+		clusterthreshold = clusterthreshold - 1
 		thresholditerations = thresholditerations - 1
 
 	if numwells == 96:
@@ -401,8 +431,11 @@ if __name__ == '__main__':
 	else:
 		log.append("No processed plate, not found 96 wells")
 		wells = []
+		
 
 	if len(wells):
         	##write the results in a separated file
-		write(wells,platename,log)
+		write(wells,platename)
+
+	writeLog(platename,log)
 

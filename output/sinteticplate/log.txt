@@ -1,15 +1,12 @@
 customizing scale well: found False, num wells 7, min radius value 18, max radius value 23
 customizing scale well: found False, num wells 14, min radius value 18, max radius value 24
-customizing scale well: found False, num wells 28, min radius value 18, max radius value 25
-customizing scale well: found False, num wells 39, min radius value 18, max radius value 26
-customizing scale well: found False, num wells 53, min radius value 18, max radius value 27
-customizing scale well: found False, num wells 81, min radius value 18, max radius value 28
-customizing scale well: found False, num wells 101, min radius value 18, max radius value 29
-customizing grid matching: found False, num wells recognized 74
-customizing scale well: found False, num wells 108, min radius value 18, max radius value 30
-customizing grid matching: found False, num wells recognized 86
-customizing scale well: found False, num wells 98, min radius value 18, max radius value 31
-customizing grid matching: found False, num wells recognized 95
-customizing scale well: found True, num wells 96, min radius value 18, max radius value 32
-customizing grid matching: found True, num wells recognized 96
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 25
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 26
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 27
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 28
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 29
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 30
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 31
+customizing scale well: found False, num wells 96, min radius value 18, max radius value 32
+customizing grid matching: found False, num wells recognized 96
 Succesfully processed plate, found 96 wells
