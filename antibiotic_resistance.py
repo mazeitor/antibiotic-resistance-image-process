@@ -94,7 +94,7 @@ def antibioticextraction(image, radius):
 	@param radius: radius of the well
 	@return: well segmented image, resistance antitiotic metric and total evaluated pixels
 	'''
-	frame = 2 
+	frame = 3 
 	total = int(np.pi*((radius-frame)*(radius-frame)))
 	resistance=0
 	x = image.shape[0]
@@ -132,16 +132,17 @@ def segmentation(image,wells,radius):
 		x1=x-radius
 		x2=x+radius
 		if x1<0:
-			x1=0
+			x1=1
 		if x2>dimension[0]:
-			x2=dimension[0]
+			x2=dimension[0]-1
 		y1=y-radius
 		y2=y+radius
 		if y1<0:
-			y1=0
+			y1=1
 		if y2>dimension[1]:
-			y2=dimension[1]
-		
+			y2=dimension[1]-1
+	
+		#print "lx",labelX,"ly",labelY,"x1",x1,"x2",x2,"y1",y1,"y2",y2
 		cropped = image[x1:x2,y1:y2]
 		croppedgray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
 		
@@ -150,7 +151,8 @@ def segmentation(image,wells,radius):
 		threshold,img = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 		#here we have img segmented, we can crop the circle
 		img,resistance,total = antibioticextraction(img,radius)
-
+		#if labelX == 5 and labelY == 0:
+		#	print "BUU", LABELROWS[labelX],LABELCOLUMNS[labelY], resistance,total
 		croppedwells.append({"image":img,"row":LABELROWS[labelX],"column":LABELCOLUMNS[labelY],"resistance":resistance,"total":total})
 	return croppedwells
 	
@@ -162,13 +164,15 @@ def quality(wells):
 	'''
 	return len(wells) == 96
 	
-def paint(wells,output,output_name):
+def paint(wells,output,output_name,platename):
 	'''
 	@brief: paint in an output image the wells found combinationing the input image
 	@param wells: numpyarray as matrix structure to manage wells
 	@param output: output image with original image
 	@param output_name: output name for the image to write
 	'''
+	path = "output/{0}".format(platename)
+
 	# ensure at least some wells were found
 	if wells is not None:
 		# convert the (x, y) coordinates and radius of the wells to integers
@@ -182,7 +186,7 @@ def paint(wells,output,output_name):
 			cv2.rectangle(output, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
 	 
 		# write to file
-		filename = "images/{0}.jpg".format(output_name)
+		filename = "{0}/{1}.jpg".format(path,output_name)
 		cv2.imwrite(filename, output, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
 
 def paintcoord(well_x, well_y, radius, output, output_name):
@@ -218,12 +222,6 @@ def write(wells, platename, log):
 	'''
 	path = "output/{0}".format(platename)
 
-	if not os.path.exists(path):
-		os.makedirs(path)
-	else:
-	        shutil.rmtree(path)#removes all the subdirectories!
-		os.makedirs(path)
-
 	data=dict()
 	for object in wells:
 		cropped = object["image"]
@@ -257,7 +255,7 @@ NUM_LABELS_IN_COLUMNS = 3
 ROW_INDEX = 0
 COLUMN_INDEX = 1
 
-def execution1(image, outputs, minRadius, maxRadius, labelthreshold):
+def execution1(image, outputs, minRadius, maxRadius, labelthreshold, platename):
        	###circle detection
 	try: 
 		##convert image to grayscale
@@ -284,7 +282,7 @@ def execution1(image, outputs, minRadius, maxRadius, labelthreshold):
 		wells = np.insert(wells, 4, 0, axis=1) ## add dimensionality
 
 		##writting wells with original
-		paint(wells,outputs["output1"],"output1")
+		paint(wells,outputs["output1"],"output1",platename)
 
 		##column 0,1 speficy the COORDINATES and COLUMN 2,3 identify ROW and COLUMN label
 		##sorting and clustering objects by rows
@@ -300,7 +298,7 @@ def execution1(image, outputs, minRadius, maxRadius, labelthreshold):
 	except:
 		return False,0,None
 
-def execution2(image, outputs, wells):
+def execution2(image, outputs, wells, platename):
 	###cleaning wells
 
 	##remove associates elements with labels less than total number of ROWS or COLUMNS
@@ -308,7 +306,7 @@ def execution2(image, outputs, wells):
 	wells = removing(wells, COLUMN_INDEX+3, NUM_LABELS_IN_COLUMNS)
 
 	##writting wells with original
-	paint(wells,outputs["output2"],"output2")
+	paint(wells,outputs["output2"],"output2",platename)
 
 	##indexing cluster id for consecutives id's in rows and columns
 	wells = indexing(wells,ROW_INDEX+3)
@@ -319,10 +317,10 @@ def execution2(image, outputs, wells):
 	return error, len(wells), wells
 
 
-def execution3(image, outputs, normalizingerror, wells):
+def execution3(image, outputs, normalizingerror, wells, platename):
         ###segmentation wells
         ##writting wells with original
-        paint(wells,outputs["output3"],"output3")
+        paint(wells,outputs["output3"],"output3", platename)
 
         ##getting an average of the radius
         radiusavg = int(np.mean(wells, axis=0)[2])-normalizingerror
@@ -366,6 +364,14 @@ if __name__ == '__main__':
 	if args["threshold"] is not None:
 		labelthreshold = int(args["threshold"])
 
+	##preparing folder for outputs
+        path = "output/{0}".format(platename)
+	if not os.path.exists(path):
+		os.makedirs(path)
+	else:
+	        shutil.rmtree(path)#removes all the subdirectories!
+	        os.makedirs(path)
+
 	##load the image, clone it for output
 	image = cv2.imread(input_path)
 	outputs = dict()
@@ -379,18 +385,18 @@ if __name__ == '__main__':
 	while numwells != 96 and thresholditerations>0:
 		iterations = 10
 		while numwells < 96 and iterations>0:
-			error, numwells, wells = execution1(image, outputs, minRadius, maxRadius, labelthreshold)
+			error, numwells, wells = execution1(image, outputs, minRadius, maxRadius, labelthreshold, platename)
 			log.append("customizing scale well: found {0}, num wells {1}, min radius value {2}, max radius value {3}".format(error, numwells, minRadius, maxRadius))
 			maxRadius = maxRadius + 1
 			iterations = iterations - 1
 			
 			if numwells>=96:
-				error, numwells, wells = execution2(image, outputs, wells)
+				error, numwells, wells = execution2(image, outputs, wells, platename)
 				log.append("customizing grid matching: found {0}, num wells recognized {1}".format(error, numwells))
 		thresholditerations = thresholditerations - 1
 
 	if numwells == 96:
-		wells = execution3(image, outputs, normalizingerror, wells)
+		wells = execution3(image, outputs, normalizingerror, wells, platename)
 		log.append("Succesfully processed plate, found 96 wells")
 	else:
 		log.append("No processed plate, not found 96 wells")
