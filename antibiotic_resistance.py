@@ -209,11 +209,12 @@ def paintcoord(well_x, well_y, radius, output, output_name):
 	filename = "images/{0}.jpg".format(output_name)
 	cv2.imwrite(filename, output, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
 	
-def write(wells, platename):
+def write(wells, platename, log):
 	'''
 	@brief: write each well found as a file
 	@param wells: numpyarray as matrix structure to manage wells
 	@param platename: platename
+	@param log: list of log
 	'''
 	path = "output/{0}".format(platename)
 
@@ -241,6 +242,14 @@ def write(wells, platename):
 	filename = "{0}/{1}.json".format(path,"report")
 	jsonfile = open(filename, 'wb')
 	json.dump(data,jsonfile)
+
+	filename = "{0}/{1}.txt".format(path,"log")
+	logfile = open(filename, 'wb')
+	for line in log:
+		logfile.write(line)
+		logfile.write("\n")
+	logfile.close()
+	
 
 ##initializing variables
 NUM_LABELS_IN_ROWS = 4
@@ -339,6 +348,8 @@ if __name__ == '__main__':
 
 	args = vars(ap.parse_args())
 
+	log = []
+
 	input_path = args["image"]
 	base, platename = os.path.split(input_path)
 	platename, extension = os.path.splitext(platename)
@@ -369,22 +380,23 @@ if __name__ == '__main__':
 		iterations = 10
 		while numwells < 96 and iterations>0:
 			error, numwells, wells = execution1(image, outputs, minRadius, maxRadius, labelthreshold)
-			print "customizing scale well: error {0}, num wells {1}, min radius value {2}, max radius value {3}".format(error, numwells, minRadius, maxRadius)
+			log.append("customizing scale well: found {0}, num wells {1}, min radius value {2}, max radius value {3}".format(error, numwells, minRadius, maxRadius))
 			maxRadius = maxRadius + 1
 			iterations = iterations - 1
 			
 			if numwells>=96:
 				error, numwells, wells = execution2(image, outputs, wells)
-				print "customizing grid matching: error {0}, num wells recognized {1}".format(error, numwells)
+				log.append("customizing grid matching: found {0}, num wells recognized {1}".format(error, numwells))
 		thresholditerations = thresholditerations - 1
 
 	if numwells == 96:
 		wells = execution3(image, outputs, normalizingerror, wells)
+		log.append("Succesfully processed plate, found 96 wells")
 	else:
-		print "error"
+		log.append("No processed plate, not found 96 wells")
 		wells = []
 
 	if len(wells):
         	##write the results in a separated file
-		write(wells,platename)
+		write(wells,platename,log)
 
