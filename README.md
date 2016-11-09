@@ -5,7 +5,7 @@ The aim of this application is extract automatically the antibiotic resistance g
 ##execution:
 python antibiotic_resistance.py --image images\plate.png
 
-###input: 
+###input:/
 images/plate.png with a plate and ninety six samples
 
 ###output:
