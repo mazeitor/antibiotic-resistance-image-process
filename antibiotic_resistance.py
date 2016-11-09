@@ -2,6 +2,9 @@ import argparse
 import cv2
 import math
 import numpy as np
+import json
+import os
+import shutil
 from numpy.random import randn
 from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage
@@ -206,11 +209,21 @@ def paintcoord(well_x, well_y, radius, output, output_name):
 	filename = "images/{0}.jpg".format(output_name)
 	cv2.imwrite(filename, output, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
 	
-def write(wells):
+def write(wells, platename):
 	'''
 	@brief: write each well found as a file
 	@param wells: numpyarray as matrix structure to manage wells
+	@param platename: platename
 	'''
+	path = "output/{0}".format(platename)
+
+	if not os.path.exists(path):
+		os.makedirs(path)
+	else:
+	        shutil.rmtree(path)#removes all the subdirectories!
+		os.makedirs(path)
+
+	data=dict()
 	for object in wells:
 		cropped = object["image"]
 		row = object["row"]
@@ -218,8 +231,16 @@ def write(wells):
 		resistance = object["resistance"]
 		total = object["total"]
 		density = round(float(resistance)/float(total),2)
-		filename = "output/{0}-{1}_{2}-{3}.jpg".format(row,column,resistance,density)
+		filename = "{0}/{1}-{2}_{3}-{4}.jpg".format(path,row,column,resistance,density)
 		cv2.imwrite(filename, cropped, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+
+		object["density"] = density
+		object.pop("image",None)
+		data[row+"-"+column]=object
+		
+	filename = "{0}/{1}.json".format(path,"report")
+	jsonfile = open(filename, 'wb')
+	json.dump(data,jsonfile)
 
 ##initializing variables
 NUM_LABELS_IN_ROWS = 4
@@ -303,8 +324,8 @@ def execution3(image, outputs, normalizingerror, wells):
         ##given a matrix of samples and an average radius, aply a otsu segmentation and get only the wells, not bounding box
         wells = segmentation(image,wells,radiusavg)
 
-        ##write the results in a separated file
-        write(wells)
+	return wells
+
 
 	
 if __name__ == '__main__':
@@ -319,6 +340,8 @@ if __name__ == '__main__':
 	args = vars(ap.parse_args())
 
 	input_path = args["image"]
+	base, platename = os.path.split(input_path)
+	platename, extension = os.path.splitext(platename)
 	minRadius = 18
 	maxRadius = 23 
 	normalizingerror = 1
@@ -339,23 +362,29 @@ if __name__ == '__main__':
 	outputs["output2"]=image.copy()
 	outputs["output3"]=image.copy()
 
+	##dynamic algorithm to find the result that converge, in this case we take account the maxradius of a well to be robust in scale and threshold to recognize a well is inside a grid (96-well plate is a grid with 8 row and 12 columns)
 	numwells = 0
 	thresholditerations = 5
 	while numwells != 96 and thresholditerations>0:
 		iterations = 10
 		while numwells < 96 and iterations>0:
 			error, numwells, wells = execution1(image, outputs, minRadius, maxRadius, labelthreshold)
-			print "ex1",error, numwells, minRadius, maxRadius
+			print "customizing scale well: error {0}, num wells {1}, min radius value {2}, max radius value {3}".format(error, numwells, minRadius, maxRadius)
 			maxRadius = maxRadius + 1
-			#minRadius = minRadius + 1
 			iterations = iterations - 1
 			
 			if numwells>=96:
 				error, numwells, wells = execution2(image, outputs, wells)
-				print "ex2",error, numwells
+				print "customizing grid matching: error {0}, num wells recognized {1}".format(error, numwells)
 		thresholditerations = thresholditerations - 1
 
 	if numwells == 96:
-		execution3(image, outputs, normalizingerror, wells)
+		wells = execution3(image, outputs, normalizingerror, wells)
 	else:
 		print "error"
+		wells = []
+
+	if len(wells):
+        	##write the results in a separated file
+		write(wells,platename)
+
