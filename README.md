@@ -61,5 +61,5 @@ sudo apt-get install python-pip
 ### matplotlib
 pip install matplotlib
 
-#### TODO
+## TODO
 * Adaptative to different plates in rows and columns 
