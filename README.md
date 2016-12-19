@@ -1,6 +1,6 @@
 # Antibiotic Resistance Process - ARP
 
-The aim of this application is to extract automatically the antibiotic resistance given a 96-well plate used in a sequencer machine. The 96 wells are cultured with a bacteria combined with an antibiotic. The bacteria which is resistance to that single antibiotic, grow up and can recognised inside the well. The applications use computer vision methods to process this image and as a result construct a report for the collection of the 96 wells, and as a main feature give the density of the bacteria which have grown up inside each the well.
+This software is aimed to quantify bacterial resistance to antibiotics by analysing pictures of phenotypic plates. Currently it supports 96 well plates where different bacteria are cultured with different concentrations of antibiotics. Computer vision algorithms have been implemented in order to detect different levels of bacterial growth. As a result, the software generates a report providing quantitative information for each well of the plate.
 
 
 ## Execution:
@@ -42,6 +42,11 @@ customizing scale well: found False, num wells 96, min radius value 18, max radi
 customizing grid matching: found False, num wells recognized 96
 Succesfully processed plate, found 96 wells
 ```
+
+## Methods:
+* Hough Circles method to detect circles in an image (doc)[http://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/hough_circle/hough_circle.html]
+* segmentation using Threshold feature of opencv (doc)[http://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html#threshold] combining binary and otsy threshold
+* Grid model by rows and columns and clustering them for quality detection. Robust to scale and sensible rotation.
 
 ## Installing dependencies
 ### opencv
