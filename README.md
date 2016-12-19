@@ -2,7 +2,7 @@
 
 The aim of this application is extract automatically the antibiotic resistance given a 96-well plate used in sequencer machine.
 
-##execution:
+###execution:
 python antibiotic_resistance.py --image images/\<platename\>.png
 
 ###input:
@@ -14,6 +14,7 @@ images/\<platename\>/\<row\>_\<column\>_\<resistance\>_\<density\>.png cropped i
 images/\<platename\>/report.json json with extracted antibiotic resistance for each well
 images/\<platename\>/log.txt log 
 
+Description of the schema:
 row: row index
 column: colmun index
 resistance: absolute resistance found
@@ -40,7 +41,6 @@ customizing scale well: found False, num wells 96, min radius value 18, max radi
 customizing grid matching: found False, num wells recognized 96
 Succesfully processed plate, found 96 wells
 ```
-
 
 ##installing dependencies
 ###opencv
