@@ -49,22 +49,14 @@ Succesfully processed plate, found 96 wells
 * Grid model by rows and columns and clustering them for quality detection. Robust to scale and sensible rotation.
 
 ## Installing dependencies
+### pip
+sudo apt-get install python-pip
 ### opencv
 sudo apt-get install build-essential
 sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
 sudo apt-get install python-opencv
-
 ### scilab
 sudo apt-get install python-scipy
-
-### python-tk
-sudo apt-get install python-tk
-
-### pip
-sudo apt-get install python-pip
-
-### matplotlib
-pip install matplotlib
 
 ## TODO
 * Adaptative to different plates in rows and columns 
