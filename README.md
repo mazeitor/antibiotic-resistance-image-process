@@ -1,9 +1,9 @@
-# antibiotic-resistance-process
+# Antibiotic Resistance Process - ARP
 
 The aim of this application is to extract automatically the antibiotic resistance given a 96-well plate used in a sequencer machine. The 96 wells are cultured with a bacteria combined with an antibiotic. The bacteria which is resistance to that single antibiotic, grow up and can recognised inside the well. The applications use computer vision methods to process this image and as a result construct a report for the collection of the 96 wells, and as a main feature give the density of the bacteria which have grown up inside each the well.
 
 
-### execution:
+## Execution:
 python antibiotic_resistance.py --image images/\<platename\>.png
 
 ### input:
@@ -43,7 +43,7 @@ customizing grid matching: found False, num wells recognized 96
 Succesfully processed plate, found 96 wells
 ```
 
-## installing dependencies
+## Installing dependencies
 ### opencv
 sudo apt-get install build-essential
 sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
