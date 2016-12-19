@@ -20,7 +20,7 @@ resistance: absolute resistance found
 density: density of the resistance found
 
 ```
-jsonexample:
+report json example:
    "7-J":{  
       "density":0.17,
       "column":"A",
@@ -29,9 +29,18 @@ jsonexample:
       "row":"4"
    },
 ```
-   
-ex: 4-A_122-0.23
-is the well 4-A, with 122 pixels found as resistance with density of 23%
+```  
+output images example: 4-A_122-0.23
+is the well 4-A, with 122 pixels found as resistance with density of 17%
+```
+```
+output log example
+customizing scale well: found False, num wells 93, min radius value 18, max radius value 23
+customizing scale well: found False, num wells 96, min radius value 18, max radius value 24
+customizing grid matching: found False, num wells recognized 96
+Succesfully processed plate, found 96 wells
+```
+
 
 ##installing dependencies
 ###opencv
