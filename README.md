@@ -10,16 +10,16 @@ python antibiotic_resistance.py --image images/\<platename\>.png
 images/\<platename\>.png with a plate and ninety six wells
 
 ### output:
-images/\<platename\>/outputXXX.png image with extracted wells
-images/\<platename\>/\<row\>_\<column\>_\<resistance\>_\<density\>.png cropped image of extracted well
-images/\<platename\>/report.json json with extracted antibiotic resistance for each well
-images/\<platename\>/log.txt log 
+* Image with extracted wells: images/\<platename\>/outputXXX.png 
+* Cropped image of extracted well: images/\<platename\>/\<row\>_\<column\>_\<resistance\>_\<density\>.png
+* Report in json format: images/\<platename\>/report.json
+* Log: images/\<platename\>/log.txt 
 
 Description of the schema:
-row: row index
-column: colmun index
-resistance: absolute resistance found
-density: density of the resistance found
+* row: row index
+* column: colmun index
+* resistance: absolute resistance found
+* density: density of the resistance found
 
 report example:
 ```
