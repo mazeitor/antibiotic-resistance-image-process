@@ -57,4 +57,4 @@ sudo apt-get install python-opencv
 sudo apt-get install python-scipy
 
 ## TODO
-* Adaptative to different plates in rows and columns 
+* Adaptative to different plates size in rows and columns 
