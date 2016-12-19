@@ -3,13 +3,13 @@
 The aim of this application is extract automatically the antibiotic resistance given a 96-well plate used in sequencer machine.
 
 ##execution:
-python antibiotic_resistance.py --image images/<platename>.png
+python antibiotic_resistance.py --image images/\<platename\>.png
 
 ###input:
 images/plate.png with a plate and ninety six wells
 
 ###output:
-images/<platename>/putputXXX.png image with extracted wells
+images/\<platename\>/putputXXX.png image with extracted wells
 images/<platename>/<row>_<column>_<resistance>_<density>.png cropped image of extracted well
 images/<platename>/report.json json with extracted antibiotic resistance for each well
 images/<platename>/log.txt log 
