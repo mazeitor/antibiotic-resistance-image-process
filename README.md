@@ -6,7 +6,7 @@ The aim of this application is extract automatically the antibiotic resistance g
 python antibiotic_resistance.py --image images/\<platename\>.png
 
 ###input:
-images/plate.png with a plate and ninety six wells
+images/\<platename\>.png with a plate and ninety six wells
 
 ###output:
 images/\<platename\>/outputXXX.png image with extracted wells
@@ -19,6 +19,17 @@ column: colmun index
 resistance: absolute resistance found
 density: density of the resistance found
 
+```
+jsonexample:
+   "7-J":{  
+      "density":0.17,
+      "column":"A",
+      "resistance":122,
+      "total":706,
+      "row":"4"
+   },
+```
+   
 ex: 4-A_122-0.23
 is the well 4-A, with 122 pixels found as resistance with density of 23%
 
