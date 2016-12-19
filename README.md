@@ -19,8 +19,8 @@ column: colmun index
 resistance: absolute resistance found
 density: density of the resistance found
 
-```
 report json example:
+```
    "7-J":{  
       "density":0.17,
       "column":"A",
@@ -29,12 +29,12 @@ report json example:
       "row":"4"
    },
 ```
+output images example:
 ```  
-output images example: 4-A_122-0.23
-is the well 4-A, with 122 pixels found as resistance with density of 17%
+4-A_122-0.23, is the well 4-A, with 122 pixels found as resistance with density of 17%
 ```
+output log example:
 ```
-output log example
 customizing scale well: found False, num wells 93, min radius value 18, max radius value 23
 customizing scale well: found False, num wells 96, min radius value 18, max radius value 24
 customizing grid matching: found False, num wells recognized 96
