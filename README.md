@@ -1,7 +1,5 @@
 # Antibiotic Resistance Process - ARP
-
-This software is aimed to quantify bacterial resistance to antibiotics by analysing pictures of phenotypic plates. Currently it supports 96 well plates where different bacteria are cultured with different concentrations of antibiotics. Computer vision algorithms have been implemented in order to detect different levels of bacterial growth. As a result, the software generates a report providing quantitative information for each well of the plate.
-
+This software is aimed to quantify bacterial resistance to antibiotics by analysing pictures of phenotypic plates. Currently it supports 96 well plates where different bacteria are cultured with different concentrations of antibiotics. Computer vision algorithms have been implemented in order to detect different levels of bacterial growth. As a result, the software generates a report providing quantitative information for each well of the plate. Pictures should be taken so that the plate is square with the picture frame, the algorithm should be able to cope with a slight rotation of the plate.
 
 ## Execution:
 python antibiotic_resistance.py --image images/\<platename\>.png
@@ -43,10 +41,10 @@ customizing grid matching: found False, num wells recognized 96
 Succesfully processed plate, found 96 wells
 ```
 
-## Methods:
+## Key methods:
 * Hough Circles method to detect circles in an image [doc](http://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/hough_circle/hough_circle.html)
-* segmentation using Threshold feature of opencv [doc](http://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html#threshold) combining binary and otsy threshold
-* Grid model by rows and columns and clustering them for quality detection. Robust to scale and sensible rotation.
+* Wells segmentation using threshold feature of opencv [doc](http://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html#threshold) combining binary and otsu threshold
+* Quality detection using a grid model by rows and columns and clustering them, robust to scale and sensible rotation.
 
 ## Installing dependencies
 ### pip
