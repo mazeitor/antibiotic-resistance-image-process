@@ -1,6 +1,7 @@
 # antibiotic-resistance-process
 
-The aim of this application is extract automatically the antibiotic resistance given a 96-well plate used in sequencer machine.
+The aim of this application is to extract automatically the antibiotic resistance given a 96-well plate used in a sequencer machine. The 96 wells are cultivated with a bacteria combined with an antibiotic. The bacteria which is resistance to that single antibiotic, grow up and can recognised inside the well. The applications use computer vision methods to process this image and as a result construct a report for the collection of the 96 wells, and as a main feature give the density of the bacteria which have grown up inside each the well.
+
 
 ###execution:
 python antibiotic_resistance.py --image images/\<platename\>.png
