@@ -9,10 +9,10 @@ python antibiotic_resistance.py --image images/\<platename\>.png
 images/plate.png with a plate and ninety six wells
 
 ###output:
-images/\<platename\>/putputXXX.png image with extracted wells
-images/<platename>/<row>_<column>_<resistance>_<density>.png cropped image of extracted well
-images/<platename>/report.json json with extracted antibiotic resistance for each well
-images/<platename>/log.txt log 
+images/\<platename\>/outputXXX.png image with extracted wells
+images/\<platename\>/\<row\>_\<column\>_\<resistance\>_\<density\>.png cropped image of extracted well
+images/\<platename\>/report.json json with extracted antibiotic resistance for each well
+images/\<platename\>/log.txt log 
 
 row: row index
 column: colmun index
