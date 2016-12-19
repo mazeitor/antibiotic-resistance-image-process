@@ -21,7 +21,7 @@ column: colmun index
 resistance: absolute resistance found
 density: density of the resistance found
 
-report json example:
+report example:
 ```
    "7-J":{  
       "density":0.17,
