@@ -44,7 +44,7 @@ Succesfully processed plate, found 96 wells
 ```
 
 ## Methods:
-* Hough Circles method to detect circles in an image [doc][http://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/hough_circle/hough_circle.html)
+* Hough Circles method to detect circles in an image [doc](http://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/hough_circle/hough_circle.html)
 * segmentation using Threshold feature of opencv [doc](http://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html#threshold) combining binary and otsy threshold
 * Grid model by rows and columns and clustering them for quality detection. Robust to scale and sensible rotation.
 
