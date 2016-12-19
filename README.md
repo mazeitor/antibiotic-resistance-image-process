@@ -3,13 +3,13 @@
 The aim of this application is to extract automatically the antibiotic resistance given a 96-well plate used in a sequencer machine. The 96 wells are cultured with a bacteria combined with an antibiotic. The bacteria which is resistance to that single antibiotic, grow up and can recognised inside the well. The applications use computer vision methods to process this image and as a result construct a report for the collection of the 96 wells, and as a main feature give the density of the bacteria which have grown up inside each the well.
 
 
-###execution:
+### execution:
 python antibiotic_resistance.py --image images/\<platename\>.png
 
-###input:
+### input:
 images/\<platename\>.png with a plate and ninety six wells
 
-###output:
+### output:
 images/\<platename\>/outputXXX.png image with extracted wells
 images/\<platename\>/\<row\>_\<column\>_\<resistance\>_\<density\>.png cropped image of extracted well
 images/\<platename\>/report.json json with extracted antibiotic resistance for each well
@@ -43,20 +43,23 @@ customizing grid matching: found False, num wells recognized 96
 Succesfully processed plate, found 96 wells
 ```
 
-##installing dependencies
-###opencv
+## installing dependencies
+### opencv
 sudo apt-get install build-essential
 sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
 sudo apt-get install python-opencv
 
-###scilab
+### scilab
 sudo apt-get install python-scipy
 
-###python-tk
+### python-tk
 sudo apt-get install python-tk
 
-###pip
+### pip
 sudo apt-get install python-pip
 
-###matplotlib
+### matplotlib
 pip install matplotlib
+
+#### TODO
+* Adaptative to different plates in rows and columns 
