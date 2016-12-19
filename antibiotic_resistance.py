@@ -6,7 +6,6 @@ import json
 import os
 import shutil
 from numpy.random import randn
-from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage
 from scipy.spatial.distance import pdist, squareform
 
@@ -120,8 +119,6 @@ def segmentation(image,wells,radius):
 
         croppedwells=[]
 
-	#index = np.lexsort((wells[:,4],wells[:,3]))
-	#wells = wells[index]
 	for well in wells:
 		y = int(well[0])
 		x = int(well[1])
@@ -161,9 +158,6 @@ def quality(wells):
 	'''
 	##count wells per each column, should be 8 per column, total 12 columns.
 	error = True
-
-	##deprecated
-	##error = len(wells)==96
 
 	columns = dict()
 	rows = dict()
@@ -328,7 +322,6 @@ def execution1(image, outputs, minRadius, maxRadius, clusterthreshold, platename
 
 def execution2(image, outputs, wells, platename):
 	###cleaning wells
-
 	##remove associates elements with labels less than total number of ROWS or COLUMNS
 	wells = removing(wells, ROW_INDEX+3, NUM_LABELS_IN_ROWS)
 	wells = removing(wells, COLUMN_INDEX+3, NUM_LABELS_IN_COLUMNS)
