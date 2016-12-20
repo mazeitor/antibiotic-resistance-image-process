@@ -1,7 +1,9 @@
 # Antibiotic Resistance Process - ARP
 This software is aimed to quantify bacterial resistance to antibiotics by analysing pictures of phenotypic plates. Currently it supports 96 well plates where different bacteria are cultured with different concentrations of antibiotics. Computer vision algorithms have been implemented in order to detect different levels of bacterial growth. As a result, the software generates a report providing quantitative information for each well of the plate. Pictures should be taken so that the plate is square with the picture frame, the algorithm should be able to cope with a slight rotation of the plate.
 
-<img src="output/sinteticplatebac/output2.jpg" align="middle" width="480">
+<p align="center">
+   <img src="output/sinteticplatebac/output2.jpg" width="480">
+</p>
 
 ## Execution:
 python antibiotic_resistance.py --image images/\<platename\>.png
