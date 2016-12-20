@@ -182,7 +182,12 @@ def quality(wells):
 			return False
 
 	return error
-	
+
+def normalizingradius(wells,normalizingerror):
+        radiusavg = int(np.mean(wells, axis=0)[2])-normalizingerror
+	wells[:,2] = radiusavg
+	return wells
+
 def paint(wells,output,output_name,platename):
 	'''
 	@brief: paint in an output image the wells found combinationing the input image
@@ -340,15 +345,16 @@ def execution2(image, outputs, wells, platename):
 
 def execution3(image, outputs, normalizingerror, wells, platename):
         ###segmentation wells
-        ##writting wells with original
-        paint(wells,outputs["output3"],"output3", platename)
 
         ##getting an average of the radius
         radiusavg = int(np.mean(wells, axis=0)[2])-normalizingerror
+	wells = normalizingradius(wells,normalizingerror)
+        ##writting wells with original
+        paint(wells,outputs["output3"],"output3", platename)
 
-        ##given a matrix of samples and an average radius, aply a otsu segmentation and get only the wells, not bounding box
+        ##given a matrix of samples and an average radius, aply an otsu segmentation and get only the wells, not bounding box
         wells = segmentation(image,wells,radiusavg)
-
+       
 	return wells
 
 
@@ -371,7 +377,7 @@ if __name__ == '__main__':
 	platename, extension = os.path.splitext(platename)
 	minRadius = 18
 	maxRadius = 23 ##scale wells recognizing 
-	normalizingerror = 5 
+	normalizingerror = 3 
 	clusterthreshold = 2 ##cluster wells recognizing
 	if args["minRadius"] is not None:
 		minRadius = int(args["minRadius"])
