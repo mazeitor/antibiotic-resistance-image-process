@@ -1,0 +1,12 @@
+customizing scale well: found False, num wells 6, min radius value 18, max radius value 23
+customizing scale well: found False, num wells 11, min radius value 18, max radius value 24
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 25
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 26
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 27
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 28
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 29
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 30
+customizing scale well: found False, num wells 0, min radius value 18, max radius value 31
+customizing scale well: found False, num wells 96, min radius value 18, max radius value 32
+customizing grid matching: found False, num wells recognized 96
+Succesfully processed plate, found 96 wells
