@@ -407,7 +407,7 @@ if __name__ == '__main__':
 		
 		while numwells < 96 and iterations>0:
 			error, numwells, wells = execution1(image, outputs, minRadius, maxRadius, clusterthreshold, platename)
-			log.append("customizing scale well: found {0}, num wells {1}, min radius value {2}, max radius value {3}".format(error, numwells, minRadius, maxRadius))
+			log.append("customizing scale well: found {0}, num wells {1}, min radius value {2}, max radius value {3}, clusterthreshold {4}".format(error, numwells, minRadius, maxRadius,clusterthreshold))
 			maxRadius = maxRadius + 1
 			iterations = iterations - 1
 			
