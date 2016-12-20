@@ -62,3 +62,4 @@ sudo apt-get install python-scipy
 
 ## TODO
 * Adaptative to different plates size in rows and columns 
+* Normalizing radius by neighborhood instead of general average
