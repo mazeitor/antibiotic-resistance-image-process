@@ -377,7 +377,7 @@ if __name__ == '__main__':
 	platename, extension = os.path.splitext(platename)
 	minRadius = 18
 	maxRadius = 23 ##scale wells recognizing 
-	normalizingerror = 3 
+	normalizingerror = 4 
 	clusterthreshold = 2 ##cluster wells recognizing
 	if args["minRadius"] is not None:
 		minRadius = int(args["minRadius"])
