@@ -20,6 +20,7 @@ images/\<platename\>.png with a plate and ninety six wells
 Description of the schema:
 * row: row index
 * column: colmun index
+* total: well area in pixels
 * resistance: absolute resistance found
 * density: density of the resistance found
 
