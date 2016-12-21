@@ -18,10 +18,10 @@ images/\<platename\>.png with a plate and ninety six wells
 * Log: images/\<platename\>/log.txt 
 
 Description of the schema:
-* row: row index
-* column: colmun index
+* row: well row index
+* column: well colmun index
 * total: well area in pixels
-* resistance: absolute resistance found
+* resistance: absolute resistance found in pixels
 * density: density of the resistance found
 
 report example:
