@@ -20,7 +20,7 @@ This software is aimed to quantify bacterial resistance to antibiotics by analys
   </tr>
   <tr>
     <td><img src="output/sinteticplatebac/report.png" width="480"></td>
-    <td><img src="output/sinteticplatebac/report_json.png" width="480"></td>
+    <td><img src="output/sinteticplatebac/report_json.png" width="240"></td>
   </tr>
 </table>
 
