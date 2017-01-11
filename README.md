@@ -18,16 +18,6 @@ This software is aimed to quantify bacterial resistance to antibiotics by analys
   </tr>
 </table>
 
-<p align="center">
-   <img src="images/sinteticplatebac.jpg" width="480">
-</p>
-<p align="center">
-   <img src="output/sinteticplatebac/output2.jpg" width="480">
-</p>
-<p align="center">
-   <img src="output/sinteticplatebac/report.png" width="480">
-</p>
-
 ## Execution:
 python antibiotic_resistance.py --image images/\<platename\>.png
 
