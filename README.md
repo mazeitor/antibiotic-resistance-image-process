@@ -25,12 +25,12 @@ This software is aimed to quantify bacterial resistance to antibiotics by analys
 </table>
 
 ## Execution:
-There are two ways for executing the process: as a binary or as a library
+There are two ways for executing the process: binary or library
 * Binary using arp.py file allocated in the project:
 ```bash
 python arp.py --image images/\<platename\>.png
 ```
-* Library:
+* Library installing as described below:
 ```bash
 import arp
 arp.process({'image': 'images/sinteticplate.jpg'})
