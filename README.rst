@@ -76,6 +76,17 @@ report
      </tr>
    </table>
 
+Key methods:
+------------
+
+-  Hough Circles method to detect circles in an image
+   `doc <http://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/hough_circle/hough_circle.html>`__
+-  Wells segmentation using threshold feature of opencv
+   `doc <http://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html#threshold>`__
+   combining binary and otsu threshold
+-  Quality detection using a grid model by rows and columns and
+   clustering them, robust to scale and sensible rotation.
+
 Execution:
 ----------
 
@@ -137,17 +148,6 @@ output log example:
     customizing scale well: found False, num wells 96, min radius value 18, max radius value 24
     customizing grid matching: found False, num wells recognized 96
     Succesfully processed plate, found 96 wells
-
-Key methods:
-------------
-
--  Hough Circles method to detect circles in an image
-   `doc <http://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/hough_circle/hough_circle.html>`__
--  Wells segmentation using threshold feature of opencv
-   `doc <http://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html#threshold>`__
-   combining binary and otsu threshold
--  Quality detection using a grid model by rows and columns and
-   clustering them, robust to scale and sensible rotation.
 
 Installing dependencies
 -----------------------
