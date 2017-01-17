@@ -80,6 +80,23 @@ sudo apt-get install python-opencv
 ### scilab
 sudo apt-get install python-scipy
 
+## Installation
+
+There are two ways of installing pynteractive:
+
+* Cloning the project
+
+```bash
+$ git clone https://github.com/mazeitor/antibiotic-resistance-process.git
+$ cd antibiotic-resistance-process
+$ python setup.py install  ### (as root)
+```
+ 
+* Via [Python package index](https://pypi.python.org/pypi/pip) (pip)
+```bash
+$ pip install arp
+```
+
 ## TODO
 * Adaptative to different plates size in rows and columns 
 * Normalizing radius by neighborhood instead of general average
