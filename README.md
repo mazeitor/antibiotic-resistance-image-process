@@ -25,7 +25,16 @@ This software is aimed to quantify bacterial resistance to antibiotics by analys
 </table>
 
 ## Execution:
-python antibiotic_resistance.py --image images/\<platename\>.png
+There are two ways for executing the process: as a binary or as a library
+* Binary using arp.py file allocated in the project:
+```bash
+python arp.py --image images/\<platename\>.png
+```
+* Library:
+```bash
+import arp
+arp.process({'image': 'images/sinteticplate.jpg'})
+```
 
 ### input:
 images/\<platename\>.png with a plate and ninety six wells
@@ -36,7 +45,7 @@ images/\<platename\>.png with a plate and ninety six wells
 * Report in json format: images/\<platename\>/report.json
 * Log: images/\<platename\>/log.txt 
 
-Description of the schema:
+description of schema:
 * row: well row index
 * column: well colmun index
 * total: well area in pixels
@@ -80,10 +89,8 @@ sudo apt-get install python-opencv
 ### scilab
 sudo apt-get install python-scipy
 
-## Installation
-
+## Installing arp
 There are two ways of installing pynteractive:
-
 * Cloning the project
 
 ```bash
