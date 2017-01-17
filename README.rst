@@ -79,7 +79,19 @@ report
 Execution:
 ----------
 
-python antibiotic\_resistance.py --image images/<platename>.png
+There are two ways for executing the process: binary or library \*
+Binary using arp.py file allocated in the project:
+
+.. code:: bash
+
+    python arp.py --image images/\<platename\>.png
+
+-  Library installing as described below:
+
+   .. code:: bash
+
+       import arp
+       arp.process({'image': 'images/sinteticplate.jpg'})
 
 input:
 ~~~~~~
@@ -95,7 +107,7 @@ output:
 -  Report in json format: images/<platename>/report.json
 -  Log: images/<platename>/log.txt
 
-Description of the schema: \* row: well row index \* column: well colmun
+description of schema: \* row: well row index \* column: well colmun
 index \* total: well area in pixels \* resistance: absolute resistance
 found in pixels \* density: density of the resistance found
 
@@ -147,6 +159,23 @@ sudo apt-get install python-pip ### opencv sudo apt-get install
 build-essential sudo apt-get install cmake git libgtk2.0-dev pkg-config
 libavcodec-dev libavformat-dev libswscale-dev sudo apt-get install
 python-opencv ### scilab sudo apt-get install python-scipy
+
+Installing arp
+--------------
+
+There are two ways of installing pynteractive: \* Cloning the project
+
+.. code:: bash
+
+    $ git clone https://github.com/mazeitor/antibiotic-resistance-process.git
+    $ cd antibiotic-resistance-process
+    $ python setup.py install  ### (as root)
+
+-  Via `Python package index <https://pypi.python.org/pypi/pip>`__ (pip)
+
+   .. code:: bash
+
+       $ pip install arp
 
 TODO
 ----
