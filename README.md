@@ -98,6 +98,10 @@ $ git clone https://github.com/mazeitor/antibiotic-resistance-process.git
 $ cd antibiotic-resistance-process
 $ python setup.py install  ### (as root)
 ```
+* Via [Python package index](https://pypi.python.org/pypi/pip) (pip), TODO
+```bash
+$ pip install pynteractive
+```
 
 ## TODO
 * Adaptative to different plates size in rows and columns 
