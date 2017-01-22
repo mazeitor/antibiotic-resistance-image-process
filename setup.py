@@ -28,7 +28,7 @@ setup(
     url='https://github.com/mazeitor/antibiotic-resistance-image-process',
 
     # Author details
-    author='Oriol Mazariegos Canellas',
+    author='oriol mazariegos',
     author_email='mazeitor@gmail.com',
 
     # Choose your license
@@ -44,9 +44,12 @@ setup(
 
         # Indicate who your project is intended for
         'Intended Audience :: Science/Research',
-        'Topic :: Software Development :: Image processing, bioinformatics, medical images',
-
-        # Pick your license as you wish (should match "license" above)
+	'Topic :: Software Development',
+        'Topic :: Scientific/Engineering :: Image Recognition',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
+	'Topic :: Scientific/Engineering :: Medical Science Apps.',
+        
+	# Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
 
         # Specify the Python versions you support here. In particular, ensure
@@ -57,7 +60,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords=['medical image processing','antibiotic resistance', 'phenotypic plate'],
+    keywords='medical image processing antibiotic resistance phenotypic plate',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().

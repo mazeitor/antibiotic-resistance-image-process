@@ -1,5 +1,5 @@
-Antibiotic Resistance Process - ARP
-===================================
+Antibiotic Resistance Process - ARIP
+====================================
 
 This software is aimed to quantify bacterial resistance to antibiotics
 by analysing pictures of phenotypic plates. Currently it supports 96
@@ -14,66 +14,71 @@ to cope with a slight rotation of the plate.
 .. raw:: html
 
    <table>
-     <colgroup>
-       <col span="2" style="background-color:red">
-       <col style="background-color:yellow">
-     </colgroup>
-     <tr>
-       <th>
-
-plate
 
 .. raw:: html
 
-   </th>
-       <th>
+   <colgroup>
 
-segmentated wells
+::
 
-.. raw:: html
-
-   </th>
-     </tr>
-     <tr>
-       <td align="middle">
+    <col span="2" style="background-color:red">
+    <col style="background-color:yellow">
 
 .. raw:: html
 
-   </td>
-       <td align="middle">
+   </colgroup>
 
 .. raw:: html
 
-   </td>
-     </tr>
-       <tr>
-       <th>
+   <tr>
 
-extracted resistance
+::
 
-.. raw:: html
-
-   </th>
-       <th>
-
-report
+    <th>plate</th>
+    <th>segmentated wells</th>
 
 .. raw:: html
 
-   </th>
-     </tr>
-     <tr>
-       <td align="middle">
+   </tr>
 
 .. raw:: html
 
-   </td>
-       <td align="middle">
+   <tr>
+
+::
+
+    <td align="middle"><img src="images/sinteticplatebac.jpg" width="480"></td>
+    <td align="middle"><img src="output/sinteticplatebac/output2.jpg" width="480"></td>
 
 .. raw:: html
 
-   </td>
-     </tr>
+   </tr>
+
+::
+
+    <tr>
+    <th>extracted resistance</th>
+    <th>report</th>
+
+.. raw:: html
+
+   </tr>
+
+.. raw:: html
+
+   <tr>
+
+::
+
+    <td align="middle"><img src="output/sinteticplatebac/report.png" width="480"></td>
+    <td align="middle"><img src="output/sinteticplatebac/report_json.png" width="160"></td>
+
+.. raw:: html
+
+   </tr>
+
+.. raw:: html
+
    </table>
 
 Key methods:
@@ -91,18 +96,18 @@ Execution:
 ----------
 
 There are two ways for executing the process: binary or library \*
-Binary using arp.py file allocated in the project:
+Binary using arip.py file allocated in the project:
 
 .. code:: bash
 
-    python arp.py --image images/\<platename\>.png
+    python arip.py --image images/\<platename\>.png
 
 -  Library installing as described below:
 
    .. code:: bash
 
-       import arp
-       arp.process({'image': 'images/sinteticplate.jpg'})
+       import arip
+       arip.process({'image': 'images/sinteticplate.jpg'})
 
 input:
 ~~~~~~
@@ -160,8 +165,8 @@ build-essential sudo apt-get install cmake git libgtk2.0-dev pkg-config
 libavcodec-dev libavformat-dev libswscale-dev sudo apt-get install
 python-opencv ### scilab sudo apt-get install python-scipy
 
-Installing arp
---------------
+Installing arip
+---------------
 
 There are two ways of installing pynteractive: \* Cloning the project
 
@@ -171,15 +176,15 @@ There are two ways of installing pynteractive: \* Cloning the project
     $ cd antibiotic-resistance-process
     $ python setup.py install  ### (as root)
 
--  Via `Python package index <https://pypi.python.org/pypi/pip>`__ (pip)
+-  Via `Python package index <https://pypi.python.org/pypi/pip>`__
+   (pip), TODO
 
    .. code:: bash
 
-       $ pip install arp
+       $ pip install arip
 
 TODO
 ----
 
 -  Adaptative to different plates size in rows and columns
 -  Normalizing radius by neighborhood instead of general average
-
