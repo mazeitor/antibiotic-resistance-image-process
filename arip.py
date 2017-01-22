@@ -19,7 +19,7 @@ Created on 01 August 2016
 @author: oriol mazariegos
 @copyright: Copyright 2016, ARIP
 @credits: ["Oriol Mazariegos"]
-@license: GPL
+@license: GPLv3
 @version: 1.0.0
 @maintainer: oriol mazariegos
 @email: oriol.mazariegos@gmail.com

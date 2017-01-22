@@ -14,18 +14,18 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='arp',
+    name='arip',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
     version='1.0.0',
 
-    description='ARP, software to quantify bacterial resistance to antibiotics by analysing picture of phenotypic plates',
+    description='ARIP, software to quantify bacterial resistance to antibiotics by analysing picture of phenotypic plates',
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/mazeitor/antibiotic-resistance-process',
+    url='https://github.com/mazeitor/antibiotic-resistance-image-process',
 
     # Author details
     author='Oriol Mazariegos Canellas',
@@ -57,7 +57,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='medical image processing',
+    keywords=['medical image processing','antibiotic resistance', 'phenotypic plate'],
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
