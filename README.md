@@ -1,4 +1,4 @@
-# Antibiotic Resistance Process - ARP
+# Antibiotic Resistance Process - ARIP
 This software is aimed to quantify bacterial resistance to antibiotics by analysing pictures of phenotypic plates. Currently it supports 96 well plates where different bacteria are cultured with different concentrations of antibiotics. Computer vision algorithms have been implemented in order to detect different levels of bacterial growth. As a result, the software generates a report providing quantitative information for each well of the plate. Pictures should be taken so that the plate is square with the picture frame, the algorithm should be able to cope with a slight rotation of the plate.
 
 <table>
@@ -31,14 +31,14 @@ This software is aimed to quantify bacterial resistance to antibiotics by analys
 
 ## Execution:
 There are two ways for executing the process: binary or library
-* Binary using arp.py file allocated in the project:
+* Binary using arip.py file allocated in the project:
 ```bash
-python arp.py --image images/\<platename\>.png
+python arip.py --image images/\<platename\>.png
 ```
 * Library installing as described below:
 ```bash
-import arp
-arp.process({'image': 'images/sinteticplate.jpg'})
+import arip
+arip.process({'image': 'images/sinteticplate.jpg'})
 ```
 
 ### input:
@@ -89,7 +89,7 @@ sudo apt-get install python-opencv
 ### scilab
 sudo apt-get install python-scipy
 
-## Installing arp
+## Installing arip
 There are two ways of installing pynteractive:
 * Cloning the project
 
@@ -100,7 +100,7 @@ $ python setup.py install  ### (as root)
 ```
 * Via [Python package index](https://pypi.python.org/pypi/pip) (pip), TODO
 ```bash
-$ pip install pynteractive
+$ pip install arip
 ```
 
 ## TODO
