@@ -11,16 +11,16 @@ This software is aimed to quantify bacterial resistance to antibiotics by analys
     <th>segmentated wells</th>
   </tr>
   <tr>
-    <td align="middle"><img src="images/sinteticplatebac.jpg" width="480"></td>
-    <td align="middle"><img src="output/sinteticplatebac/output2.jpg" width="480"></td>
+    <td align="middle"><img src="arip/images/sinteticplatebac.jpg" width="480"></td>
+    <td align="middle"><img src="arip/output/sinteticplatebac/output2.jpg" width="480"></td>
   </tr>
     <tr>
     <th>extracted resistance</th>
     <th>report</th>
   </tr>
   <tr>
-    <td align="middle"><img src="output/sinteticplatebac/report.png" width="480"></td>
-    <td align="middle"><img src="output/sinteticplatebac/report_json.png" width="160"></td>
+    <td align="middle"><img src="arip/output/sinteticplatebac/report.png" width="480"></td>
+    <td align="middle"><img src="arip/output/sinteticplatebac/report_json.png" width="160"></td>
   </tr>
 </table>
 
