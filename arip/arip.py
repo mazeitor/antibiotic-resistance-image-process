@@ -142,8 +142,13 @@ def antibioticextraction(image, radius):
 	return image,resistance,total
 
 def segmentation(image,wells,radius):
-        LABELROWS=["1","2","3","4","5","6","7","8"]
-        LABELCOLUMNS=["A","B","C","D","E","F","G","H","I","J","K","l"]
+	LABELROWS=[]
+	LABELCOLUMNS=[]
+
+	for lr in range(SHAPE[1]):
+		LABELROWS.append(str(lr))
+	for lc in range(SHAPE[0]):
+		LABELCOLUMNS.append(str(chr(lc+65)))
 
         croppedwells=[]
 
@@ -180,7 +185,7 @@ def segmentation(image,wells,radius):
 	
 def quality(wells):
 	'''
-	@brief: check if there all wells have been found or if are missing or more than ninety six
+	@brief: check if all wells have been found or if are missing or more than ninety six
 	@param wells: numpyarray as matrix structure to manage wells
 	@return: true or false
 	'''
@@ -190,9 +195,9 @@ def quality(wells):
 	columns = dict()
 	rows = dict()
 
-	for i in range(12):
+	for i in range(SHAPE[0]):
 		columns[i] = 0
-	for i in range(8):
+	for i in range(SHAPE[1]):
 		rows[i] = 0
 
 	for well in wells:
@@ -203,10 +208,10 @@ def quality(wells):
 		rows[labelX] = rows[labelX]+1
 
 	for column in columns:
-		if column != 8:
+		if column != SHAPE[1]:
 			return False
 	for row in rows:
-		if row != 12:
+		if row != SHAPE[0]:
 			return False
 
 	return error
@@ -304,11 +309,6 @@ def writeLog(platename,log):
 	logfile.close()
 	
 
-##initializing variables
-NUM_LABELS_IN_ROWS = 4
-NUM_LABELS_IN_COLUMNS = 3
-ROW_INDEX = 0
-COLUMN_INDEX = 1
 
 def execution1(image, outputs, minRadius, maxRadius, clusterthreshold, platename):
        	###circle detection
@@ -321,10 +321,10 @@ def execution1(image, outputs, minRadius, maxRadius, clusterthreshold, platename
 		wells = cv2.HoughCircles(
 						gray,                                           ## image
 						cv2.cv.CV_HOUGH_GRADIENT,       ## method for detecting wells
-						1,                                                      ## canny filter
-						15,                                                     ## minimun distance between wells detected
+						1,                                                     ## canny filter
+						(minRadius+maxRadius)/2,
 						param1=30,                                      ## 30
-						param2=15,                                      ## 15
+						param2=20,                                      ## 15
 						minRadius=minRadius,            ## 20 ## 18 relaxed
 						maxRadius=maxRadius             ## 25 ## 27 relaxed
 					  )
@@ -335,7 +335,7 @@ def execution1(image, outputs, minRadius, maxRadius, clusterthreshold, platename
 		wells = wells[0,:]
 		wells = np.insert(wells, 3, 0, axis=1) ## add dimensionality
 		wells = np.insert(wells, 4, 0, axis=1) ## add dimensionality
-
+	
 		##writting wells with original
 		paint(wells,outputs["output1"],"output1",platename)
 
@@ -403,6 +403,9 @@ def process(args):
 		normalizingerror = int(args["normError"])
 	if args["threshold"] is not None:
 		clusterthreshold = int(args["threshold"])
+	if args["shape"] is not None:
+		global SHAPE
+		SHAPE = args["shape"]
 
 	##preparing folder for outputs
         path = "output/{0}".format(platename)
@@ -420,27 +423,29 @@ def process(args):
 	outputs["output3"]=image.copy()
 
 	##dynamic algorithm to find the result that converge, in this case we take account the maxradius of a well to be robust in scale and threshold to recognize a well is inside a grid (96-well plate is a grid with 8 row and 12 columns)
+	MAXWELLS = SHAPE[0] * SHAPE[1]
+	
 	numwells = 0
-	thresholditerations = 5
-	clusterthreshold = 5
-	while numwells != 96 and thresholditerations>0:
-		iterations = 10
-		maxRadius = 23
-		
-		while numwells < 96 and iterations>0:
+	thresholditerations = 5	#5
+	clusterthreshold = 5	#5
+	while numwells != MAXWELLS and thresholditerations>0:
+		iterations = 10 
+		maxRadius = 23 
+
+		while numwells < MAXWELLS and iterations>0:
 			error, numwells, wells = execution1(image, outputs, minRadius, maxRadius, clusterthreshold, platename)
 			log.append("customizing scale well: found {0}, num wells {1}, min radius value {2}, max radius value {3}, clusterthreshold {4}".format(error, numwells, minRadius, maxRadius,clusterthreshold))
 			maxRadius = maxRadius + 1
 			iterations = iterations - 1
 			
-			if numwells>=96:
+			if numwells>=MAXWELLS:
 				error, numwells, wells = execution2(image, outputs, wells, platename)
 				log.append("customizing grid matching: found {0}, num wells recognized {1}".format(error, numwells))
 		
 		clusterthreshold = clusterthreshold - 1
 		thresholditerations = thresholditerations - 1
 
-	if numwells == 96:
+	if numwells == MAXWELLS:
 		wells = execution3(image, outputs, normalizingerror, wells, platename)
 		log.append("Succesfully processed plate, found 96 wells")
 	else:
@@ -454,6 +459,15 @@ def process(args):
 
 	writeLog(platename,log)
 
+
+##initializing variables
+NUM_LABELS_IN_ROWS = 4
+NUM_LABELS_IN_COLUMNS = 3
+ROW_INDEX = 0
+COLUMN_INDEX = 1
+SHAPE = (12,8)
+
+
 if __name__ == '__main__':
 	# construct the argument parser and parse the arguments
 	ap = argparse.ArgumentParser()
@@ -462,6 +476,7 @@ if __name__ == '__main__':
 	ap.add_argument("--maxRadius", required = False, help = "Max radius for hough circles method")
 	ap.add_argument("--normError", required = False, help = "Error value to normalize the radius of a circle to be evaluated")
 	ap.add_argument("--threshold", required = False, help = "Threshold to construct groups of rows and colums")
+	ap.add_argument("--shape", required = False, help = "Shape of the grid to be recognized")
 
 	args = vars(ap.parse_args())
 
