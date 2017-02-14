@@ -105,3 +105,4 @@ $ pip install arip
 
 ## TODO
 * Normalizing radius by neighborhood instead of general average
+* Working with static grids or masks
