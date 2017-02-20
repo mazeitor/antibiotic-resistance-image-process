@@ -310,7 +310,7 @@ def writeLog(platename,log):
 	
 
 
-def execution1(image, outputs, minRadius, maxRadius, clusterthreshold, platename):
+def welldetector(image, outputs, minRadius, maxRadius, clusterthreshold, platename):
        	###circle detection
 	try: 
 		##convert image to grayscale
@@ -353,7 +353,7 @@ def execution1(image, outputs, minRadius, maxRadius, clusterthreshold, platename
 	except:
 		return False,0,None
 
-def execution2(image, outputs, wells, platename):
+def wellcleaner(image, outputs, wells, platename):
 	###cleaning wells
 	##remove associates elements with labels less than total number of ROWS or COLUMNS
 	wells = removing(wells, ROW_INDEX+3, NUM_LABELS_IN_ROWS)
@@ -371,7 +371,7 @@ def execution2(image, outputs, wells, platename):
 	return error, len(wells), wells
 
 
-def execution3(image, outputs, normalizingerror, wells, platename):
+def wellsegmenter(image, outputs, normalizingerror, wells, platename):
         ###segmentation wells
 
         ##getting an average of the radius
@@ -433,20 +433,20 @@ def process(args):
 		maxRadius = 23 
 
 		while numwells < MAXWELLS and iterations>0:
-			error, numwells, wells = execution1(image, outputs, minRadius, maxRadius, clusterthreshold, platename)
+			error, numwells, wells = welldetector(image, outputs, minRadius, maxRadius, clusterthreshold, platename)
 			log.append("customizing scale well: found {0}, num wells {1}, min radius value {2}, max radius value {3}, clusterthreshold {4}".format(error, numwells, minRadius, maxRadius,clusterthreshold))
 			maxRadius = maxRadius + 1
 			iterations = iterations - 1
 			
 			if numwells>=MAXWELLS:
-				error, numwells, wells = execution2(image, outputs, wells, platename)
+				error, numwells, wells = wellcleaner(image, outputs, wells, platename)
 				log.append("customizing grid matching: found {0}, num wells recognized {1}".format(error, numwells))
 		
 		clusterthreshold = clusterthreshold - 1
 		thresholditerations = thresholditerations - 1
 
 	if numwells == MAXWELLS:
-		wells = execution3(image, outputs, normalizingerror, wells, platename)
+		wells = wellsegmenter(image, outputs, normalizingerror, wells, platename)
 		log.append("Succesfully processed plate, found 96 wells")
 	else:
 		log.append("No processed plate, not found 96 wells")
