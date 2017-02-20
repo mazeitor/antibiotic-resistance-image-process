@@ -142,6 +142,14 @@ def antibioticextraction(image, radius):
 	return image,resistance,total
 
 def segmentation(image,wells,radius):
+	'''
+	@brief: antibiotic segmentation for each well
+	@param image: original image of a plate
+	@param wells: list fo wells
+	@param radius: radius average
+	@return: list of cropped wells
+	'''
+	
 	LABELROWS=[]
 	LABELCOLUMNS=[]
 
@@ -217,6 +225,12 @@ def quality(wells):
 	return error
 
 def normalizingradius(wells,normalizingerror):
+	'''
+	@brief: change the radius for the detected wells
+	@param wells: list of wells
+	@param normalizingerror: normalizing error value
+	return: list of wells with a new radius value 
+	'''
         radiusavg = int(np.mean(wells, axis=0)[2])-normalizingerror
 	wells[:,2] = radiusavg
 	return wells
@@ -300,6 +314,11 @@ def write(wells, platename):
 
 
 def writeLog(platename,log):
+	'''
+	@brief: write to file the log datastructre for a processed plate
+	@param platename: plate name
+	@param log: data structure
+	'''
 	path = "output/{0}".format(platename)
 	filename = "{0}/{1}.txt".format(path,"log")
 	logfile = open(filename, 'wb')
@@ -311,7 +330,16 @@ def writeLog(platename,log):
 
 
 def welldetector(image, outputs, minRadius, maxRadius, clusterthreshold, platename):
-       	###circle detection
+       	'''
+	@brief: well detection
+	@param image: original image of a plate
+	@param outputs: datastructure to store the different images the system extract and plot at the end of the process
+	@param minRadius: min radius to detect circles
+	@param maxRadius: max radius to detect circles
+	@param clusterthreshold: 
+	@param platename: plate name 
+	@return: error value, length of detected wells and list of segmented wells otherwise False,0,None
+	'''
 	try: 
 		##convert image to grayscale
 		gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -354,6 +382,14 @@ def welldetector(image, outputs, minRadius, maxRadius, clusterthreshold, platena
 		return False,0,None
 
 def wellcleaner(image, outputs, wells, platename):
+	'''
+	@brief: clean overdetected wells
+	@param image: original image of a plate
+	@param outputs: datastructure to store the different images the system extract and plot at the end of the process
+	@param wells: list of detected wells
+	@param platename: plate name
+	@return: error value, length of detected wells and list of segmented wells
+	'''
 	###cleaning wells
 	##remove associates elements with labels less than total number of ROWS or COLUMNS
 	wells = removing(wells, ROW_INDEX+3, NUM_LABELS_IN_ROWS)
@@ -372,7 +408,15 @@ def wellcleaner(image, outputs, wells, platename):
 
 
 def wellsegmenter(image, outputs, normalizingerror, wells, platename):
-        ###segmentation wells
+        '''
+	@brief: extracting antibiotic inside wells
+	@param image: original image of a plate
+	@param outputs: datastructure to store the different images the system extract and plot at the end of the process
+	@param normalizingerror: error value for the detected radius average
+	@param wells: list of detected wells
+	@param platename: plate name
+	@return: list of wells
+	'''
 
         ##getting an average of the radius
         radiusavg = int(np.mean(wells, axis=0)[2])-normalizingerror
@@ -386,6 +430,10 @@ def wellsegmenter(image, outputs, normalizingerror, wells, platename):
 	return wells
 
 def process(args):
+	'''
+	@brief: main process
+	@param args: minRadius, maxRadius, normError, threshold, shape
+	'''
 	log = []
 
 	input_path = args["image"]
@@ -466,7 +514,6 @@ NUM_LABELS_IN_COLUMNS = 3
 ROW_INDEX = 0
 COLUMN_INDEX = 1
 SHAPE = (12,8)
-
 
 if __name__ == '__main__':
 	# construct the argument parser and parse the arguments
