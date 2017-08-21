@@ -90,12 +90,12 @@ sudo apt-get install python-opencv
 sudo apt-get install python-scipy
 
 ## Installing arip
-There are two ways of installing pynteractive:
+There are two ways of installing arip:
 * Cloning the project
 
 ```bash
-$ git clone https://github.com/mazeitor/antibiotic-resistance-process.git
-$ cd antibiotic-resistance-process
+$ git clone https://github.com/mazeitor/antibiotic-resistance-image-process.git
+$ cd antibiotic-resistance-image-process
 $ python setup.py install  ### (as root)
 ```
 * Via [Python package index](https://pypi.python.org/pypi/pip) (pip), TODO
